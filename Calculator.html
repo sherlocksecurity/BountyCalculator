@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ZomatoBounty Calculator</title>
+  <style>
+    /* Add some basic styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #000;
+      background-image: url('background-cloud-black.png');
+      background-size: cover;
+      background-blend-mode: lighten;
+      animation: fadeIn 1s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 28px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      animation: slideIn 1s ease;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+      .low {
+    color: #ffff00; /* light yellow */
+  }
+
+  .medium {
+    color: #ffd700; /* gold/yellow */
+  }
+
+  .high {
+    color: #ff4500; /* orange/red */
+  }
+
+  .critical {
+    color: #ff0000; /* red */
+  }
+
+    .low-label {
+    color: #ffffe0; /* light yellow */
+  }
+
+  .medium-label {
+    color: #ffd700; /* gold/yellow */
+  }
+
+  .high-label {
+    color: #ffa07a; /* light salmon */
+  }
+
+  .critical-label {
+    color: #ff7f7f; /* light coral */
+  }
+
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px 0;
+      font-size: 16px;
+      background-color: #ff523b;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff3922;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+      position: relative;
+      color: #0f9d58;
+    }
+
+    .result p {
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      max-width: 150px;
+    }
+
+    .disclaimer {
+      margin-top: 30px;
+      font-size: 14px;
+      text-align: center;
+      color: #888;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      0% {
+        transform: translateY(-20px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Zomato HackerOne Bounty Calculator</h1>
+
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Zomato_Logo.svg/1200px-Zomato_Logo.svg.png?20220328090416" alt="Zomato Logo">
+
+    <div class="form-group">
+      <label for="cvssScore">CVSS Score: (1-10 Format)</label>
+      <input type="number" id="cvssScore" step="0.1" min="0" max="10">
+    </div>
+
+    <div class="form-group severity-box">
+  <label class="low-label">Low Severity Range:</label>
+  <div>
+    <label for="lowMinBounty">Min Bounty:</label>
+    <input type="number" id="lowMinBounty" min="0" value="100">
+    <label for="lowMaxBounty">Max Bounty:</label>
+    <input type="number" id="lowMaxBounty" min="0" value="300">
+  </div>
+</div>
+
+<div class="form-group severity-box">
+  <label class="medium-label">Medium Severity Range:</label>
+  <div>
+    <label for="mediumMinBounty">Min Bounty:</label>
+    <input type="number" id="mediumMinBounty" min="0" value="300">
+    <label for="mediumMaxBounty">Max Bounty:</label>
+    <input type="number" id="mediumMaxBounty" min="0" value="1000">
+  </div>
+</div>
+
+<div class="form-group severity-box">
+  <label class="high-label">High Severity Range:</label>
+  <div>
+    <label for="highMinBounty">Min Bounty:</label>
+    <input type="number" id="highMinBounty" min="0" value="1000">
+    <label for="highMaxBounty">Max Bounty:</label>
+    <input type="number" id="highMaxBounty" min="0" value="2000">
+  </div>
+</div>
+
+<div class="form-group severity-box">
+  <label class="critical-label">Critical Severity Range:</label>
+  <div>
+    <label for="criticalMinBounty">Min Bounty:</label>
+    <input type="number" id="criticalMinBounty" min="0" value="2000">
+    <label for="criticalMaxBounty">Max Bounty:</label>
+    <input type="number" id="criticalMaxBounty" min="0" value="4000">
+  </div>
+</div>
+
+
+    <button onclick="calculateBounty()">Calculate</button>
+
+    <div id="result" class="result">
+      <p>Suggested bounty: <span id="bountyAmount"></span></p>
+    </div>
+
+    <div class="disclaimer">
+      <p>Disclaimer: This site is created for demonstration purposes and does not accept actual vulnerability reports or provide real bounties. It is designed to showcase the concept of bounty calculation. Do not attempt to report this domain as a subdomain takeover or security vulnerability.</p>
+    </div>
+    <p style="text-align: center; color: #fff;">Made with &#10084; from Zomato </p>
+  </div>
+
+  <script>
+  function calculateBounty() {
+    const cvssScoreInput = document.getElementById('cvssScore');
+    const lowMinBountyInput = document.getElementById('lowMinBounty');
+    const lowMaxBountyInput = document.getElementById('lowMaxBounty');
+    const mediumMinBountyInput = document.getElementById('mediumMinBounty');
+    const mediumMaxBountyInput = document.getElementById('mediumMaxBounty');
+    const highMinBountyInput = document.getElementById('highMinBounty');
+    const highMaxBountyInput = document.getElementById('highMaxBounty');
+    const criticalMinBountyInput = document.getElementById('criticalMinBounty');
+    const criticalMaxBountyInput = document.getElementById('criticalMaxBounty');
+    const resultContainer = document.getElementById('result');
+    const bountyAmountContainer = document.getElementById('bountyAmount');
+
+    const cvssScore = parseFloat(cvssScoreInput.value);
+    const lowMinBounty = parseFloat(lowMinBountyInput.value);
+    const lowMaxBounty = parseFloat(lowMaxBountyInput.value);
+    const mediumMinBounty = parseFloat(mediumMinBountyInput.value);
+    const mediumMaxBounty = parseFloat(mediumMaxBountyInput.value);
+    const highMinBounty = parseFloat(highMinBountyInput.value);
+    const highMaxBounty = parseFloat(highMaxBountyInput.value);
+    const criticalMinBounty = parseFloat(criticalMinBountyInput.value);
+    const criticalMaxBounty = parseFloat(criticalMaxBountyInput.value);
+
+    let bounty = 0;
+
+    let severity = '';
+
+  if (cvssScore >= 0 && cvssScore < 4) {
+    bounty = mapRange(cvssScore, 0, 3.9, lowMinBounty, lowMaxBounty);
+    severity = 'low';
+  } else if (cvssScore >= 4 && cvssScore < 7) {
+    bounty = mapRange(cvssScore, 4, 6.9, mediumMinBounty, mediumMaxBounty);
+    severity = 'medium';
+  } else if (cvssScore >= 7 && cvssScore < 9) {
+    bounty = mapRange(cvssScore, 7, 8.9, highMinBounty, highMaxBounty);
+    severity = 'high';
+  } else if (cvssScore >= 9 && cvssScore <= 10) {
+    bounty = mapRange(cvssScore, 9, 10, criticalMinBounty, criticalMaxBounty);
+    severity = 'critical';
+  }
+
+  if (isNaN(bounty)) {
+    resultContainer.innerHTML = '<p class="error">Invalid CVSS score or bounty range</p>';
+    bountyAmountContainer.innerText = '';
+  } else {
+    // Remove previous severity class if present
+    resultContainer.classList.remove('low', 'medium', 'high', 'critical');
+
+    resultContainer.innerHTML = `<p>Suggested bounty: <span class="${severity}">$${bounty.toFixed(2)}</span></p>`;
+    bountyAmountContainer.innerText = `$${bounty.toFixed(2)}`;
+
+    // Add the new severity class to the result container
+    resultContainer.classList.add(severity);
+  }
+}
+function mapRange(value, inMin, inMax, outMin, outMax) {
+  return ((value - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+}
+
+
+
+  </script>
+</body>
+</html>
