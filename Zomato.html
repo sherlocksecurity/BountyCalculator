@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Zomato Bounty Calculator</title>
+  <title>ZomatoBounty Calculator</title>
   <style>
     /* Add some basic styling */
     body {
@@ -212,6 +212,22 @@
       <p>Suggested bounty: <span id="bountyAmount"></span></p>
     </div>
 
+  <div class="multiplier-box">
+  <label for="multiplier">Multiplier:</label>
+  <select id="multiplier" onchange="handleMultiplierChange(this.value)">
+    <option value="1">1x</option>
+    <option value="1.5">1.5x</option>
+    <option value="2">2x</option>
+    <option value="2.5">2.5x</option>
+    <option value="3">3x</option>
+    <option value="3.5">3.5x</option>
+    <option value="4">4x</option>
+    <option value="4.5">4.5x</option>
+    <option value="5">5x</option>
+      </select>
+</div>
+
+
     <div class="disclaimer">
       <p>Disclaimer: This site is created for demonstration purposes and does not accept actual vulnerability reports or provide real bounties. It is designed to showcase the concept of bounty calculation. Do not attempt to report this domain as a subdomain takeover or security vulnerability.</p>
     </div>
@@ -219,32 +235,30 @@
   </div>
 
   <script>
-  function calculateBounty() {
-    const cvssScoreInput = document.getElementById('cvssScore');
-    const lowMinBountyInput = document.getElementById('lowMinBounty');
-    const lowMaxBountyInput = document.getElementById('lowMaxBounty');
-    const mediumMinBountyInput = document.getElementById('mediumMinBounty');
-    const mediumMaxBountyInput = document.getElementById('mediumMaxBounty');
-    const highMinBountyInput = document.getElementById('highMinBounty');
-    const highMaxBountyInput = document.getElementById('highMaxBounty');
-    const criticalMinBountyInput = document.getElementById('criticalMinBounty');
-    const criticalMaxBountyInput = document.getElementById('criticalMaxBounty');
-    const resultContainer = document.getElementById('result');
-    const bountyAmountContainer = document.getElementById('bountyAmount');
+function calculateBounty() {
+  const cvssScoreInput = document.getElementById('cvssScore');
+  const lowMinBountyInput = document.getElementById('lowMinBounty');
+  const lowMaxBountyInput = document.getElementById('lowMaxBounty');
+  const mediumMinBountyInput = document.getElementById('mediumMinBounty');
+  const mediumMaxBountyInput = document.getElementById('mediumMaxBounty');
+  const highMinBountyInput = document.getElementById('highMinBounty');
+  const highMaxBountyInput = document.getElementById('highMaxBounty');
+  const criticalMinBountyInput = document.getElementById('criticalMinBounty');
+  const criticalMaxBountyInput = document.getElementById('criticalMaxBounty');
+  const resultContainer = document.getElementById('result');
 
-    const cvssScore = parseFloat(cvssScoreInput.value);
-    const lowMinBounty = parseFloat(lowMinBountyInput.value);
-    const lowMaxBounty = parseFloat(lowMaxBountyInput.value);
-    const mediumMinBounty = parseFloat(mediumMinBountyInput.value);
-    const mediumMaxBounty = parseFloat(mediumMaxBountyInput.value);
-    const highMinBounty = parseFloat(highMinBountyInput.value);
-    const highMaxBounty = parseFloat(highMaxBountyInput.value);
-    const criticalMinBounty = parseFloat(criticalMinBountyInput.value);
-    const criticalMaxBounty = parseFloat(criticalMaxBountyInput.value);
+  const cvssScore = parseFloat(cvssScoreInput.value);
+  const lowMinBounty = parseFloat(lowMinBountyInput.value);
+  const lowMaxBounty = parseFloat(lowMaxBountyInput.value);
+  const mediumMinBounty = parseFloat(mediumMinBountyInput.value);
+  const mediumMaxBounty = parseFloat(mediumMaxBountyInput.value);
+  const highMinBounty = parseFloat(highMinBountyInput.value);
+  const highMaxBounty = parseFloat(highMaxBountyInput.value);
+  const criticalMinBounty = parseFloat(criticalMinBountyInput.value);
+  const criticalMaxBounty = parseFloat(criticalMaxBountyInput.value);
 
-    let bounty = 0;
-
-    let severity = '';
+  let bounty = 0;
+  let severity = '';
 
   if (cvssScore >= 0 && cvssScore < 4) {
     bounty = mapRange(cvssScore, 0, 3.9, lowMinBounty, lowMaxBounty);
@@ -260,25 +274,39 @@
     severity = 'critical';
   }
 
+  resultContainer.innerHTML = ''; // Reset the result container
+
   if (isNaN(bounty)) {
     resultContainer.innerHTML = '<p class="error">Invalid CVSS score or bounty range</p>';
-    bountyAmountContainer.innerText = '';
   } else {
     // Remove previous severity class if present
     resultContainer.classList.remove('low', 'medium', 'high', 'critical');
 
-    resultContainer.innerHTML = `<p>Suggested bounty: <span class="${severity}">$${bounty.toFixed(2)}</span></p>`;
-    bountyAmountContainer.innerText = `$${bounty.toFixed(2)}`;
+    const suggestedBountyText = `<p>Suggested bounty: <span class="${severity}">$${bounty.toFixed(2)}</span></p>`;
+    const suggestedBountyElement = document.createElement('div');
+    suggestedBountyElement.innerHTML = suggestedBountyText;
 
-    // Add the new severity class to the result container
-    resultContainer.classList.add(severity);
+    resultContainer.appendChild(suggestedBountyElement);
+
+    const multiplierInput = document.getElementById('multiplier');
+    const multiplier = parseFloat(multiplierInput.value);
+
+    let finalBounty = bounty * multiplier;
+
+    if (!isNaN(finalBounty)) {
+      const multiplierText = `${multiplier}x`;
+      const finalBountyText = `<p>Final bounty with ${multiplierText} multiplier: <span class="${severity}">$${finalBounty.toFixed(2)}</span></p>`;
+      const finalBountyElement = document.createElement('div');
+      finalBountyElement.innerHTML = finalBountyText;
+
+      resultContainer.appendChild(finalBountyElement);
+    }
   }
 }
+
 function mapRange(value, inMin, inMax, outMin, outMax) {
   return ((value - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
 }
-
-
 
   </script>
 </body>
