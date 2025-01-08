@@ -164,6 +164,7 @@
       <select id="program" onchange="handleProgramChange(this.value)">
         <option value="Zomato">Zomato</option>
         <option value="Blinkit">Blinkit</option>
+        <option value="District">District</option>
       </select>
     </div>
 
@@ -260,6 +261,16 @@
       criticalMin: 1000,
       criticalMax: 2000,
     },
+     District: {
+      lowMin: 50,
+      lowMax: 100,
+      mediumMin: 100,
+      mediumMax: 250,
+      highMin: 250,
+      highMax: 500,
+      criticalMin: 500,
+      criticalMax: 1000,
+    }
   };
 
   function handleProgramChange(program) {
