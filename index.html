@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eternal Bug Bounty Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #1a1a1a;
+      --bg-card: #222222;
+      --bg-input: #2a2a2a;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --accent-primary: #ff4444;
+      --accent-secondary: #ff6666;
+      --border-color: #333333;
+      --shadow-light: rgba(255, 255, 255, 0.05);
+      --shadow-dark: rgba(0, 0, 0, 0.3);
+      --gradient-primary: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+      --gradient-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gradient-bg);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, #ff4444 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ff6666 0%, transparent 50%),
+                  radial-gradient(circle at 40% 80%, #ff4444 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .header {
+      padding: 1.5rem 0;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0;
+    }
+
+    .logo {
+      width: auto;
+      height: 55px;
+      filter: brightness(0) invert(1);
+      flex-shrink: 0;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px var(--shadow-dark);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-primary);
+      opacity: 0.5;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px var(--shadow-dark);
+      border-color: var(--accent-primary);
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title i {
+      color: var(--accent-primary);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .tier-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .tier-option {
+      padding: 1rem;
+      background: var(--bg-input);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tier-option:hover {
+      border-color: var(--accent-secondary);
+      transform: translateY(-2px);
+    }
+
+    .tier-option.active {
+      border-color: var(--accent-primary);
+      background: rgba(255, 68, 68, 0.1);
+    }
+
+    .tier-option.active::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: var(--gradient-primary);
+      border-radius: 12px;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .tier-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+    }
+
+    .tier-name {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.3rem;
+    }
+
+    .cvss-container {
+      position: relative;
+    }
+
+    .cvss-input {
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 1rem !important;
+    }
+
+    .cvss-range {
+      margin-top: 0.5rem;
+    }
+
+    .cvss-range input[type="range"] {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-input);
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .cvss-range input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(255, 68, 68, 0.3);
+    }
+
+    .severity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .severity-card {
+      background: var(--bg-input);
+      border-radius: 10px;
+      padding: 1rem;
+      border-left: 4px solid;
+      transition: all 0.3s ease;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .severity-card:hover {
+      transform: translateX(5px);
+    }
+
+    .severity-card.low { border-left-color: #ffd700; }
+    .severity-card.medium { border-left-color: #ff8c00; }
+    .severity-card.high { border-left-color: #ff4500; }
+    .severity-card.critical { border-left-color: #ff0000; }
+
+    .severity-header {
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .severity-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .severity-inputs input {
+      padding: 0.7rem;
+      font-size: 0.9rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      width: 100%;
+      min-width: 60px;
+      box-sizing: border-box;
+    }
+
+    .severity-inputs input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.1);
+    }
+
+    .calculate-btn {
+      width: 100%;
+      padding: 1.2rem;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+    }
+
+    .calculate-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .calculate-btn:hover::before {
+      left: 100%;
+    }
+
+    .calculate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+    }
+
+    .result-container {
+      margin: 0.8rem 0;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .result-card {
+      background: var(--bg-input);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 2px solid var(--border-color);
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .result-card.has-result {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border-color: #10b981;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+      transform: scale(1.02);
+    }
+
+    .bounty-amount {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #10b981;
+      text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+      margin-bottom: 0.5rem;
+      font-family: 'Inter', monospace;
+      position: relative;
+    }
+
+    .bounty-amount::before {
+      content: '$';
+      font-size: 2rem;
+      position: absolute;
+      left: -1.5rem;
+      top: 0.2rem;
+      opacity: 0.7;
+    }
+
+    .severity-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0.5rem;
+    }
+
+    @keyframes moneyGlow {
+      0%, 100% { text-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+      50% { text-shadow: 0 0 30px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.4); }
+    }
+
+    .result-card.has-result .bounty-amount {
+      animation: moneyGlow 2s ease-in-out infinite;
+    }
+
+    .severity-badge.low { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+    .severity-badge.medium { background: rgba(255, 140, 0, 0.2); color: #ff8c00; }
+    .severity-badge.high { background: rgba(255, 69, 0, 0.2); color: #ff4500; }
+    .severity-badge.critical { background: rgba(255, 0, 0, 0.2); color: #ff0000; }
+
+    .multiplier-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.8rem 0;
+    }
+
+    .multiplier-label {
+      font-weight: 600;
+      white-space: nowrap;
+      font-size: 1rem;
+    }
+
+    .scope-content {
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+    }
+
+    .scope-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scope-content::-webkit-scrollbar-track {
+      background: var(--bg-card);
+    }
+
+    .scope-content::-webkit-scrollbar-thumb {
+      background: var(--accent-primary);
+      border-radius: 3px;
+    }
+
+    .scope-section-title {
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 1.5rem 0 0.8rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 2px solid var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .scope-section-title:first-child {
+      margin-top: 0.5rem;
+    }
+
+    .scope-section-title i {
+      font-size: 1.2rem;
+    }
+
+    .scope-item {
+      padding: 0.5rem 1rem;
+      margin: 0.3rem 0;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+      border-left: 3px solid;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    }
+
+    .scope-item:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(5px);
+    }
+
+    .scope-domain { 
+      color: #64b5f6; 
+      border-left-color: #64b5f6;
+    }
+    
+    .scope-app { 
+      color: #81c784; 
+      border-left-color: #81c784;
+    }
+    
+    .scope-url { 
+      color: #ffb74d; 
+      border-left-color: #ffb74d;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-color);
+      grid-column: 1 / -1;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-link {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--accent-secondary);
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        max-width: 100%;
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1rem;
+      }
+      
+      .tier-selector {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .severity-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .severity-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .tier-selector {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+      
+      .severity-card {
+        min-height: 100px;
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        height: 50px;
+      }
+      
+      .logo-container {
+        gap: 1rem;
+      }
+      
+      .title {
+        font-size: 2.2rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        padding: 1.2rem 0;
+      }
+      
+      .logo-container {
+        flex-direction: column;
+        gap: 0.8rem;
+        text-align: center;
+      }
+      
+      .title {
+        font-size: 1.8rem;
+      }
+      
+      .logo {
+        height: 40px;
+      }
+      
+      .card {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+      
+      .severity-inputs {
+        gap: 0.5rem;
+      }
+      
+      .severity-inputs input {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: slideInUp 0.6s ease-out;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.2s;
+      animation-fill-mode: both;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  
+  <header class="header">
+    <div class="logo-container">
+      <img src="https://www.eternal.com/_astro/eternal_footer_logo.Y-I0MwrK.svg" alt="Eternal" class="logo">
+      <h1 class="title">Bug Bounty Calculator</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h2 class="card-title">
+        <i class="fas fa-calculator"></i>
+        Bounty Calculator
+      </h2>
+
+      <div class="form-group">
+        <label class="form-label">Security Tier</label>
+        <div class="tier-selector">
+          <div class="tier-option active" data-tier="Tier1">
+            <div class="tier-number">1</div>
+            <div class="tier-name">Tier 1</div>
+          </div>
+          <div class="tier-option" data-tier="Tier2">
+            <div class="tier-number">2</div>
+            <div class="tier-name">Tier 2</div>
+          </div>
+          <div class="tier-option" data-tier="Tier3">
+            <div class="tier-number">3</div>
+            <div class="tier-name">Tier 3</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">CVSS Score</label>
+        <div class="cvss-container">
+          <input type="number" id="cvssScore" class="form-input cvss-input" 
+                 step="0.1" min="0" max="10" placeholder="Enter CVSS Score (0.0 - 10.0)">
+          <div class="cvss-range">
+            <input type="range" id="cvssRange" min="0" max="10" step="0.1" value="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="severity-grid">
+        <div class="severity-card low">
+          <div class="severity-header">
+            <i class="fas fa-info-circle"></i>
+            Low (0.0 - 3.9)
+          </div>
+          <div class="severity-inputs">
+            <input type="number" id="lowMin" placeholder="Min" value="100">
+            <input type="number" id="lowMax" placeholder="Max" value="300">
+          </div>
+        </div>
+
+        <div class="severity-card medium">
+          <div class="severity-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            Medium (4.0 - 6.9)
+          </div>
+          <div class="severity-inputs">
+            <input type="number" id="mediumMin" placeholder="Min" value="300">
+            <input type="number" id="mediumMax" placeholder="Max" value="1000">
+          </div>
+        </div>
+
+        <div class="severity-card high">
+          <div class="severity-header">
+            <i class="fas fa-exclamation-circle"></i>
+            High (7.0 - 8.9)
+          </div>
+          <div class="severity-inputs">
+            <input type="number" id="highMin" placeholder="Min" value="1000">
+            <input type="number" id="highMax" placeholder="Max" value="2000">
+          </div>
+        </div>
+
+        <div class="severity-card critical">
+          <div class="severity-header">
+            <i class="fas fa-skull-crossbones"></i>
+            Critical (9.0 - 10.0)
+          </div>
+          <div class="severity-inputs">
+            <input type="number" id="criticalMin" placeholder="Min" value="2000">
+            <input type="number" id="criticalMax" placeholder="Max" value="4000">
+          </div>
+        </div>
+      </div>
+
+      <div class="multiplier-container">
+        <label class="multiplier-label">Multiplier:</label>
+        <select id="multiplier" class="form-select" style="flex: 1;">
+          <option value="1">1.0x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2.0x</option>
+          <option value="2.5">2.5x</option>
+          <option value="3">3.0x</option>
+          <option value="3.5">3.5x</option>
+          <option value="4">4.0x</option>
+          <option value="4.5">4.5x</option>
+          <option value="5">5.0x</option>
+        </select>
+      </div>
+
+      <button class="calculate-btn" onclick="calculateBounty()">
+        <i class="fas fa-rocket"></i> Calculate Bounty
+      </button>
+
+      <div class="result-container">
+        <div id="resultCard" class="result-card">
+          <div class="empty-state">
+            <i class="fas fa-chart-line"></i>
+            <div>Enter a CVSS score to calculate bounty</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">
+        <i class="fas fa-bullseye"></i>
+        Program Scope
+      </h2>
+      
+      <div id="scopeContent" class="scope-content">
+        <div class="empty-state">
+          <i class="fas fa-target"></i>
+          <div>Select a tier to view program scope</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const programBountyRanges = {
+      Tier1: {
+        lowMin: 100, lowMax: 300,
+        mediumMin: 300, mediumMax: 1000,
+        highMin: 1000, highMax: 2000,
+        criticalMin: 2000, criticalMax: 4000,
+      },
+      Tier2: {
+        lowMin: 100, lowMax: 200,
+        mediumMin: 200, mediumMax: 500,
+        highMin: 500, highMax: 1000,
+        criticalMin: 1000, criticalMax: 2000,
+      },
+      Tier3: {
+        lowMin: 50, lowMax: 100,
+        mediumMin: 100, mediumMax: 250,
+        highMin: 250, highMax: 500,
+        criticalMin: 500, criticalMax: 1000,
+      }
+    };
+
+    const tierScopes = {
+      Tier1: {
+        domains: [
+          '*.zomato.com',
+          '*.zomans.com',
+          '*.runnr.in',
+          'blinkit.com'
+        ],
+        apps: [
+          '434613896 (Zomato iOS)',
+          '960335206 (Blinkit Customer iOS)',
+          '6670203019 (Blinkit Bistro iOS)',
+          'com.application.zomato (Zomato Android)',
+          'com.grofers.customerapp (Blinkit Customer Android)',
+          'com.blinkit.bistro (Blinkit Bistro Android)',
+          'com.zomato.delivery (Zomato Delivery Android)'
+        ],
+        urls: [
+          'https://mcp-server.zomato.com/mcp (Zomato MCP Server)'
+        ]
+      },
+      Tier2: {
+        domains: [
+          '*.blinkit.com',
+          '*.hyperpure.com',
+          '*.grofer.io',
+          '*.grofers.com',
+          'www.district.in',
+          'api2.grofers.com',
+          'api.grofers.com'
+        ],
+        apps: [
+          'com.application.zomato.district (District Android)',
+          '6670536058 (District iOS)'
+        ],
+        urls: []
+      },
+      Tier3: {
+        domains: [
+          '*.district.in',
+          '*.insider.in',
+          '*.edition.in',
+          '*.ticketnew.com',
+          '*.eternal.com'
+        ],
+        apps: [],
+        urls: []
+      }
+    };
+
+    let currentTier = 'Tier1';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setupEventListeners();
+      updateScopeDisplay(currentTier);
+      updateBountyRanges(currentTier);
+    });
+
+    function setupEventListeners() {
+      document.querySelectorAll('.tier-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.tier-option').forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+          currentTier = this.dataset.tier;
+          updateBountyRanges(currentTier);
+          updateScopeDisplay(currentTier);
+        });
+      });
+
+      const cvssScore = document.getElementById('cvssScore');
+      const cvssRange = document.getElementById('cvssRange');
+
+      cvssScore.addEventListener('input', function() {
+        cvssRange.value = this.value;
+        updateSeverityHighlight(this.value);
+      });
+
+      cvssRange.addEventListener('input', function() {
+        cvssScore.value = this.value;
+        updateSeverityHighlight(this.value);
+      });
+
+      cvssScore.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          calculateBounty();
+        }
+      });
+    }
+
+    function updateSeverityHighlight(score) {
+      document.querySelectorAll('.severity-card').forEach(card => {
+        card.style.transform = '';
+        card.style.boxShadow = '';
+      });
+
+      if (score >= 0 && score < 4) {
+        highlightSeverityCard('.severity-card.low');
+      } else if (score >= 4 && score < 7) {
+        highlightSeverityCard('.severity-card.medium');
+      } else if (score >= 7 && score < 9) {
+        highlightSeverityCard('.severity-card.high');
+      } else if (score >= 9 && score <= 10) {
+        highlightSeverityCard('.severity-card.critical');
+      }
+    }
+
+    function highlightSeverityCard(selector) {
+      const card = document.querySelector(selector);
+      if (card) {
+        card.style.transform = 'translateX(5px) scale(1.02)';
+        card.style.boxShadow = '0 10px 30px rgba(255, 68, 68, 0.2)';
+      }
+    }
+
+    function updateBountyRanges(tier) {
+      const ranges = programBountyRanges[tier];
+      document.getElementById('lowMin').value = ranges.lowMin;
+      document.getElementById('lowMax').value = ranges.lowMax;
+      document.getElementById('mediumMin').value = ranges.mediumMin;
+      document.getElementById('mediumMax').value = ranges.mediumMax;
+      document.getElementById('highMin').value = ranges.highMin;
+      document.getElementById('highMax').value = ranges.highMax;
+      document.getElementById('criticalMin').value = ranges.criticalMin;
+      document.getElementById('criticalMax').value = ranges.criticalMax;
+    }
+
+    function updateScopeDisplay(tier) {
+      const scopeContent = document.getElementById('scopeContent');
+      const scope = tierScopes[tier];
+      
+      if (!scope) {
+        scopeContent.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>No scope defined for this tier</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="scope-section-title"><i class="fas fa-crosshairs"></i> In Scope Assets</div>';
+
+      if (scope.domains && scope.domains.length > 0) {
+        html += '<div class="scope-section-title"><i class="fas fa-globe"></i> Domains</div>';
+        scope.domains.forEach(domain => {
+          html += `<div class="scope-item scope-domain">${domain}</div>`;
+        });
+      }
+
+      if (scope.apps && scope.apps.length > 0) {
+        html += '<div class="scope-section-title"><i class="fas fa-mobile-alt"></i> Mobile Applications</div>';
+        scope.apps.forEach(app => {
+          html += `<div class="scope-item scope-app">${app}</div>`;
+        });
+      }
+
+      if (scope.urls && scope.urls.length > 0) {
+        html += '<div class="scope-section-title"><i class="fas fa-link"></i> Specific URLs</div>';
+        scope.urls.forEach(url => {
+          html += `<div class="scope-item scope-url">${url}</div>`;
+        });
+      }
+
+      if (!scope.domains.length && !scope.apps.length && !scope.urls.length) {
+        html = `
+          <div class="empty-state">
+            <i class="fas fa-info-circle"></i>
+            <div>No specific scope defined for ${tier}</div>
+          </div>
+        `;
+      }
+      
+      scopeContent.innerHTML = html;
+    }
+
+    function calculateBounty() {
+      const cvssScore = parseFloat(document.getElementById('cvssScore').value);
+      const resultCard = document.getElementById('resultCard');
+
+      if (isNaN(cvssScore) || cvssScore < 0 || cvssScore > 10) {
+        resultCard.innerHTML = `
+          <div class="empty-state" style="color: var(--accent-primary);">
+            <i class="fas fa-exclamation-circle"></i>
+            <div>Please enter a valid CVSS score (0.0 - 10.0)</div>
+          </div>
+        `;
+        resultCard.classList.remove('has-result');
+        return;
+      }
+
+      const lowMin = parseFloat(document.getElementById('lowMin').value);
+      const lowMax = parseFloat(document.getElementById('lowMax').value);
+      const mediumMin = parseFloat(document.getElementById('mediumMin').value);
+      const mediumMax = parseFloat(document.getElementById('mediumMax').value);
+      const highMin = parseFloat(document.getElementById('highMin').value);
+      const highMax = parseFloat(document.getElementById('highMax').value);
+      const criticalMin = parseFloat(document.getElementById('criticalMin').value);
+      const criticalMax = parseFloat(document.getElementById('criticalMax').value);
+
+      let bounty = 0;
+      let severity = '';
+      let severityClass = '';
+
+      if (cvssScore >= 0 && cvssScore < 4) {
+        bounty = mapRange(cvssScore, 0, 3.9, lowMin, lowMax);
+        severity = 'Low';
+        severityClass = 'low';
+      } else if (cvssScore >= 4 && cvssScore < 7) {
+        bounty = mapRange(cvssScore, 4, 6.9, mediumMin, mediumMax);
+        severity = 'Medium';
+        severityClass = 'medium';
+      } else if (cvssScore >= 7 && cvssScore < 9) {
+        bounty = mapRange(cvssScore, 7, 8.9, highMin, highMax);
+        severity = 'High';
+        severityClass = 'high';
+      } else if (cvssScore >= 9 && cvssScore <= 10) {
+        bounty = mapRange(cvssScore, 9, 10, criticalMin, criticalMax);
+        severity = 'Critical';
+        severityClass = 'critical';
+      }
+
+      const multiplier = parseFloat(document.getElementById('multiplier').value);
+      const finalBounty = bounty * multiplier;
+
+      resultCard.classList.add('has-result');
+      resultCard.innerHTML = `
+        <div class="bounty-amount">${finalBounty.toFixed(2)}</div>
+        <div class="severity-badge ${severityClass}">${severity} - CVSS ${cvssScore}</div>
+        ${multiplier > 1 ? `<div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Base: $${bounty.toFixed(2)} × ${multiplier}x multiplier</div>` : ''}
+      `;
+
+      createConfetti();
+    }
+
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+      return ((value - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+    }
+
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = ['#ff4444', '#ff6666', '#ffd700', '#ff8c00'][Math.floor(Math.random() * 4)];
+        confetti.style.borderRadius = '50%';
+        confetti.style.pointerEvents = 'none';
+        confetti.style.zIndex = '10000';
+        confetti.style.animation = 'fall 3s linear forwards';
+        document.body.appendChild(confetti);
+
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fall {
+        from {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
