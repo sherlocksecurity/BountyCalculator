@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#171b2b">
   <meta name="description" content="Calculate Eternal and Nugget base bounties from a finalized CVSS score, with visible policy ranges and a calculation breakdown.">
   <title>Eternal · Bounty Calculator</title>
-  <link rel="stylesheet" href="styles.css?v=20260930-visible-ranges">
-  <script type="module" src="src/app.mjs?v=20260930-visible-ranges"></script>
+  <link rel="stylesheet" href="styles.css?v=20260930-select-assets">
+  <script type="module" src="src/app.mjs?v=20260930-select-assets"></script>
 </head>
 <body data-program="eternal">
   <a class="skip-link" href="#calculator">Skip to calculator</a>
@@ -39,6 +39,7 @@
       <fieldset class="group-fieldset">
         <legend id="group-label">Asset tier</legend>
         <p id="program-description" class="program-description"></p>
+        <button id="choose-asset" class="choose-asset" type="button" aria-haspopup="dialog" aria-controls="asset-dialog"><span><strong id="selected-asset-name">Choose an asset</strong><span id="selected-asset-note">Search all assets · Tier selected automatically</span></span><span aria-hidden="true">⌄</span></button>
         <div id="group-options" class="group-options"></div>
       </fieldset>
     </section>
@@ -66,6 +67,7 @@
         <div id="empty-result" class="empty-result"><div class="empty-symbol" aria-hidden="true">↗</div><h2>Your estimate starts here</h2><p id="empty-message">Choose an asset tier and enter a CVSS score.</p></div>
         <div id="quote-result" hidden>
           <div class="quote-context"><span id="quote-program"></span><span class="context-dot">·</span><span id="quote-group"></span></div>
+          <p id="quote-asset" class="quote-asset" hidden></p>
           <output id="base-amount" class="bounty-amount" aria-live="polite"></output>
           <div class="quote-meta"><span id="quote-severity" class="severity-pill"></span><span id="quote-score"></span></div>
           <div class="result-divider"></div>
@@ -91,7 +93,7 @@
     <label class="asset-search-label" for="asset-search">Search assets</label>
     <input id="asset-search" type="search" placeholder="Domain, app name, or app ID" autocomplete="off">
     <div id="asset-dialog-list" class="asset-dialog-list" role="list" aria-label="Assets"></div>
-    <p id="asset-search-empty" hidden>No matching assets in this tier.</p>
+    <p id="asset-search-empty" hidden>No matching assets. Try a domain, app name, or app ID.</p>
     <div class="asset-dialog-footer"><a id="asset-dialog-policy" target="_blank" rel="noopener noreferrer">View policy ↗</a><button id="asset-dialog-select" type="button"></button></div>
     <p class="asset-dialog-note">The current HackerOne scope and exclusions determine testing eligibility.</p>
   </dialog>

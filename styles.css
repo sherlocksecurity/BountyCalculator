@@ -252,3 +252,15 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
   .reward-reference{grid-row:3}
   .footer{grid-row:4}
 }
+
+/* Select an exact asset and apply its published tier. */
+.choose-asset{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 13px;margin-bottom:14px;text-align:left;border:1px solid #cbd3e0;border-radius:10px;background:#fafbfe;color:var(--ink);min-height:62px}
+.choose-asset>span:first-child{min-width:0}.choose-asset strong{display:block;font-size:14px;overflow-wrap:anywhere}.choose-asset #selected-asset-note{display:block;font-size:10px;color:var(--muted);margin-top:3px}.choose-asset>span:last-child{font-size:20px;color:var(--accent)}
+.choose-asset:hover{border-color:var(--accent);background:var(--accent-soft)}
+.quote-asset{font-size:12px;color:#d4e3f6;overflow-wrap:anywhere;margin:7px 0 0;line-height:1.5}
+.asset-dialog-list .asset-row{padding:4px 0;border:0}
+.asset-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:58px;padding:12px;border:1px solid transparent;border-radius:10px;background:transparent;text-align:left;color:var(--ink)}
+.asset-choice-label{min-width:0}.asset-choice:hover,.asset-choice[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.asset-choice:focus-visible{outline-offset:-3px}
+.asset-tier-badge{flex-shrink:0;font-size:11px;font-weight:650;color:var(--accent);background:var(--accent-soft);padding:5px 8px;border-radius:6px;max-width:105px}
+@media(max-width:480px){.asset-choice{padding:10px 7px;gap:8px}.asset-tier-badge{max-width:76px;font-size:10px}.asset-choice .asset-name{font-size:16px}.asset-choice .asset-identifier{font-size:13px}}
