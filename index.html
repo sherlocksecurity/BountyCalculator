@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#171b2b">
   <meta name="description" content="Calculate Eternal and Nugget base bounties from a finalized CVSS score, with visible policy ranges and a calculation breakdown.">
   <title>Eternal · Bounty Calculator</title>
-  <link rel="stylesheet" href="styles.css?v=20260930-nugget">
-  <script type="module" src="src/app.mjs?v=20260930-nugget"></script>
+  <link rel="stylesheet" href="styles.css?v=20260930-asset-bonus">
+  <script type="module" src="src/app.mjs?v=20260930-asset-bonus"></script>
 </head>
 <body data-program="eternal">
   <a class="skip-link" href="#calculator">Skip to calculator</a>
@@ -35,14 +35,18 @@
       </label>
     </fieldset>
 
+    <section class="panel asset-picker" aria-labelledby="group-label">
+      <fieldset class="group-fieldset">
+        <legend id="group-label">Asset tier</legend>
+        <p id="program-description" class="program-description"></p>
+        <div id="group-options" class="group-options"></div>
+      </fieldset>
+      <p class="asset-reference-note">Match your asset to the list, then select its card. The current HackerOne scope and exclusions determine eligibility.</p>
+    </section>
+
     <div class="workspace">
       <section class="panel input-panel" aria-labelledby="configuration-title">
         <div class="section-heading"><div><p class="eyebrow">CALCULATION INPUTS</p><h2 id="configuration-title">Set up your estimate</h2></div><span class="step-number" aria-hidden="true">01</span></div>
-        <fieldset class="group-fieldset">
-          <legend id="group-label">Asset tier</legend>
-          <div id="group-options" class="group-options"></div>
-        </fieldset>
-        <p id="program-description" class="program-description"></p>
         <div class="score-section">
           <div class="score-heading"><label for="cvss-score">CVSS score</label><span>0.0–10.0 · one decimal</span></div>
           <div class="score-input-wrap"><input id="cvss-score" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="e.g. 9.5" aria-describedby="score-hint score-error"><span id="severity-pill" class="severity-pill" hidden></span></div>
@@ -50,11 +54,12 @@
           <p id="score-hint" class="field-hint">Use the finalized CVSS v3.1 score. A score of 0.0 returns $0.00.</p>
           <p id="score-error" class="field-error" role="alert" hidden></p>
         </div>
-        <details id="multiplier-details" class="bonus-details">
-          <summary>Optional multiplier<span class="summary-note">Manual adjustment</span></summary>
-          <div class="bonus-controls"><label for="multiplier">Bonus multiplier</label><select id="multiplier"><option value="1">None · 1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="2.5">2.5×</option><option value="3">3×</option><option value="3.5">3.5×</option><option value="4">4×</option><option value="4.5">4.5×</option><option value="5">5×</option></select></div>
-          <p class="field-hint">For a separately agreed bonus or campaign. It does not change the published base bounty and resets when you change programs or assets.</p>
-        </details>
+        <fieldset class="bonus-picker" aria-describedby="bonus-hint">
+          <legend>Bonus multiplier <span class="optional-badge">Optional</span></legend>
+          <div class="bonus-intro"><span>Choose an agreed campaign bonus.</span><span id="bonus-status">No bonus applied</span></div>
+          <div id="multiplier-options" class="multiplier-options"></div>
+          <p id="bonus-hint" class="field-hint">Shown separately from the base bounty. Resets when you change the program or asset.</p>
+        </fieldset>
       </section>
 
       <section class="result-panel" aria-labelledby="result-title">
@@ -77,7 +82,6 @@
       <div class="section-heading"><div><p class="eyebrow">POLICY REFERENCE</p><h2 id="rates-title">Published reward ranges</h2></div><a id="policy-link" class="text-link" href="https://hackerone.com/eternal" target="_blank" rel="noopener noreferrer">View program policy <span aria-hidden="true">↗</span></a></div>
       <p id="rates-caption" class="rates-caption">Choose an asset tier to see its rates.</p>
       <div class="table-scroll"><table class="rates-table"><caption class="visually-hidden">Reward ranges in USD by CVSS v3.1 severity</caption><thead><tr><th scope="col">Severity</th><th scope="col">CVSS v3.1</th><th scope="col">Base reward · USD</th></tr></thead><tbody id="rate-rows"></tbody></table></div>
-      <details class="scope-details" id="scope-details"><summary>Asset scope reference<span aria-hidden="true">+</span></summary><p id="scope-description"></p><ul id="scope-list" class="scope-list"></ul><p class="scope-note">The current HackerOne scope and exclusions determine testing eligibility. This list is a reference, not authorization to test.</p></details>
     </section>
     <footer class="footer"><p>Base rewards use linear interpolation within each severity band. Final severity and awards are determined by the Eternal Security Team.</p><a href="https://www.first.org/cvss/v3.1/specification-document" target="_blank" rel="noopener noreferrer">CVSS v3.1 specification ↗</a></footer>
     <noscript><p class="noscript-message">Enable JavaScript to calculate a bounty. Current policy rates are available on HackerOne.</p></noscript>

@@ -41,20 +41,20 @@ test('program and group changes update every result and reset manual bonuses', (
   const ui = setup();
   ui.select('rate-group', 'tier-1');
   ui.score('9.5');
-  ui.change(ui.id('multiplier'), '2');
+  ui.select('multiplier', '2');
   assert.equal(ui.id('base-amount').textContent, '$3,000.00');
   assert.equal(ui.id('adjusted-amount').textContent, '$6,000.00');
   ui.select('rate-group', 'tier-2');
   assert.equal(ui.id('base-amount').textContent, '$1,500.00');
-  assert.equal(ui.id('multiplier').value, '1');
+  assert.equal(ui.doc.querySelector('input[name="multiplier"]:checked').value, '1');
   assert.equal(ui.id('manual-result').hidden, true);
   ui.select('rate-group', 'tier-3');
   assert.equal(ui.id('base-amount').textContent, '$750.00');
-  ui.change(ui.id('multiplier'), '5');
+  ui.select('multiplier', '5');
   ui.select('program', 'eternal-private');
   assert.equal(ui.id('base-amount').textContent, '');
   assert.equal(ui.id('copy-result').disabled, true);
-  assert.equal(ui.id('multiplier').value, '1');
+  assert.equal(ui.doc.querySelector('input[name="multiplier"]:checked').value, '1');
   assert.equal(ui.doc.querySelector('input[name="rate-group"]:checked'), null);
   ui.select('rate-group', 'sdk');
   assert.equal(ui.id('base-amount').textContent, '$750.00');
@@ -81,6 +81,22 @@ test('slider updates score, severity, rate highlight and calculation together', 
     assert.equal(selected?.dataset.severity || 'none', label.toLowerCase());
   }
   assert.equal(ui.id('base-amount').textContent, '$4,000.00');
+});
+
+test('every multiplier card applies its labeled bonus without replacing the base', () => {
+  const ui = setup();
+  ui.select('rate-group', 'tier-1');
+  ui.score('9.5');
+  const expected = [['1','$3,000.00'],['1.5','$4,500.00'],['2','$6,000.00'],['2.5','$7,500.00'],['3','$9,000.00'],['3.5','$10,500.00'],['4','$12,000.00'],['4.5','$13,500.00'],['5','$15,000.00']];
+  for (const [multiplier, amount] of expected) {
+    ui.select('multiplier', multiplier);
+    assert.equal(ui.id('base-amount').textContent, '$3,000.00');
+    assert.equal(ui.id('manual-result').hidden, multiplier === '1');
+    if (multiplier !== '1') assert.equal(ui.id('adjusted-amount').textContent, amount);
+  }
+  ui.select('rate-group', 'tier-2');
+  assert.equal(ui.id('bonus-status').textContent, 'No bonus applied');
+  assert.equal(ui.doc.querySelector('input[name="multiplier"]:checked').value, '1');
 });
 
 test('copy uses current program/asset; async clipboard status cannot leak into another quote', async () => {

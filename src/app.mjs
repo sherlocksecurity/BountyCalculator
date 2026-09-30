@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-nugget';
-import { calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-nugget';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-asset-bonus';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-asset-bonus';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);
@@ -21,14 +21,28 @@ export function initCalculator(doc, options = {}) {
 
   function resetMultiplier() {
     state.multiplier = '1';
-    byId('multiplier').value = '1';
-    byId('multiplier-details').open = false;
+    for (const input of byId('multiplier-options').querySelectorAll('input')) input.checked = input.value === '1';
+  }
+
+  function renderMultiplierOptions() {
+    byId('multiplier-options').replaceChildren(...MULTIPLIERS.map(value => {
+      const label = textElement('label', '', 'multiplier-option');
+      const input = doc.createElement('input');
+      input.type = 'radio';
+      input.name = 'multiplier';
+      input.value = value;
+      input.checked = value === state.multiplier;
+      const card = textElement('span', '', 'multiplier-card');
+      card.append(textElement('strong', `${value}×`), textElement('span', value === '1' ? 'No bonus' : `+${(Number(value) - 1) * 100}% bonus`));
+      label.append(input, card);
+      return label;
+    }));
   }
 
   function renderGroups() {
     const selected = program();
     doc.body.dataset.program = selected.id;
-    byId('group-label').textContent = selected.groupLabel;
+    byId('group-label').textContent = selected.id === 'eternal' ? 'Find your asset, choose its tier' : 'Choose your Nugget asset';
     byId('program-description').textContent = selected.description;
     byId('policy-link').href = selected.source;
     const labels = selected.groups.map(group => {
@@ -39,8 +53,23 @@ export function initCalculator(doc, options = {}) {
       input.name = 'rate-group';
       input.value = group.id;
       input.checked = group.id === state.groupId;
+      input.setAttribute('aria-label', group.name);
       const card = textElement('span', '', 'group-card');
-      card.append(textElement('strong', group.name), textElement('span', group.note));
+      card.append(textElement('strong', group.name), textElement('span', group.note, 'group-note'));
+      if (selected.id === 'eternal') {
+        const assets = textElement('span', '', 'group-asset-list');
+        assets.setAttribute('role', 'list');
+        assets.setAttribute('aria-label', `${group.name} assets`);
+        for (const asset of group.scope) {
+          const item = textElement('span', asset);
+          item.setAttribute('role', 'listitem');
+          assets.append(item);
+        }
+        card.append(assets);
+      } else {
+        card.append(textElement('span', group.scopeDescription, 'group-asset-description'));
+      }
+      card.append(textElement('span', `Select ${group.name}`, 'group-select-label'));
       label.append(input, card);
       return label;
     });
@@ -65,8 +94,6 @@ export function initCalculator(doc, options = {}) {
         textElement('td', group ? formatRange(group.ranges[band.id]) : '—', 'rate-value'));
       return row;
     }));
-    byId('scope-description').textContent = group ? (group.scopeDescription || `${group.name} asset references from the Eternal policy.`) : 'Select an asset or tier to view its scope reference.';
-    byId('scope-list').replaceChildren(...(group?.scope || []).map(asset => textElement('li', asset)));
   }
 
   function clearResult(message) {
@@ -81,6 +108,7 @@ export function initCalculator(doc, options = {}) {
   }
 
   function render() {
+    byId('bonus-status').textContent = state.multiplier === '1' ? 'No bonus applied' : `${state.multiplier}× selected`;
     const group = program().groups.find(item => item.id === state.groupId);
     let ticks;
     let scoreError = '';
@@ -148,7 +176,8 @@ export function initCalculator(doc, options = {}) {
     scoreInput.value = scoreLabel(Number(slider.value));
     render();
   });
-  byId('multiplier').addEventListener('change', event => {
+  byId('multiplier-options').addEventListener('change', event => {
+    if (!event.target.matches('input[name="multiplier"]')) return;
     state.multiplier = event.target.value;
     render();
   });
@@ -168,6 +197,7 @@ export function initCalculator(doc, options = {}) {
     }
   });
 
+  renderMultiplierOptions();
   renderGroups();
   render();
 }
