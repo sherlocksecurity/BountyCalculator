@@ -1,5 +1,5 @@
 @charset "UTF-8";
-:root{color-scheme:light;--ink:#172034;--muted:#626b7e;--line:#e3e6ed;--accent:#b72f4d;--accent-soft:#fff0f3;--page:#f5f6fa;--shadow:0 8px 32px #18213907;--radius:20px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none}
+:root{color-scheme:light;--ink:#172034;--muted:#626b7e;--line:#e3e6ed;--accent:#245ee8;--accent-soft:#edf3ff;--page:#f5f6fa;--shadow:0 8px 32px #18213907;--radius:20px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none}
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font-size:15px;line-height:1.5}
 body[data-program="eternal-private"]{--accent:#6352ca;--accent-soft:#f1efff}
@@ -75,3 +75,11 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
 @media(max-width:740px){.workspace{grid-template-columns:1fr}.result-panel{min-height:370px}.empty-result{min-height:215px}.program-card{gap:10px}.program-copy>span{font-size:10px}.program-monogram{width:34px;height:34px;border-radius:9px;font-size:20px}.program-copy strong{font-size:13px}.selection-mark{width:15px;height:15px}.program-picker{gap:10px}.program-option input:checked+.program-card .selection-mark{border-width:4px}.program-description{min-height:0}.footer{display:block}.footer a{display:inline-block;margin-top:10px}.bounty-amount{font-size:54px}.result-panel{padding:26px}.page-heading{margin-bottom:25px}.group-card{min-height:69px}}
 @media(max-width:480px){.topbar-inner{padding:17px 18px}.wordmark{font-size:23px}.wordmark-section,.wordmark-divider{display:none}.currency-tag{font-size:9px;gap:7px}.page{padding:26px 16px 20px}h1{font-size:34px;letter-spacing:-1.3px}.subtitle{font-size:12px;max-width:310px;line-height:1.6}.program-picker{grid-template-columns:1fr;gap:10px;margin-bottom:18px}.program-card{min-height:76px;padding:14px 17px}.program-copy strong{font-size:14px}.program-copy>span{font-size:10px}.program-monogram{width:37px;height:37px}.input-panel{padding:23px 19px}.section-heading{margin-bottom:20px}h2{font-size:18px}.group-options{gap:7px}.group-card{padding:10px 8px}.group-card strong{font-size:11px}.group-card>span{font-size:9px}.score-heading>span{font-size:9px}.summary-note{font-size:9px}.result-panel{padding:24px 22px}.rates-panel{padding:22px 17px 0}.rates-panel .section-heading{align-items:flex-start;gap:8px}.rates-panel h2{font-size:16px}.text-link{font-size:9px}.rates-table th,.rates-table td{padding:11px 8px}.rates-table{font-size:11px}.rates-table thead th{font-size:8px;letter-spacing:.4px}.rates-table th:first-child{width:31%}.severity-pill{font-size:9px;padding:5px 7px}.quote-facts strong{font-size:13px}.bounty-amount{font-size:49px}.footer{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* Official wordmarks are unmodified SVGs from Eternal’s brand library. */
+.header-logo{display:block;width:112px;height:auto}
+.program-logo{display:flex;align-items:center;justify-content:center;width:82px;height:45px;flex-shrink:0;margin-right:4px}
+.program-logo img{display:block;width:100%;height:auto;max-height:42px;object-fit:contain}
+@media(max-width:900px){.program-logo{width:61px;margin-right:0}}
+@media(max-width:740px) and (min-width:481px){.program-card{flex-wrap:wrap}.program-logo{width:70px}.program-copy{flex:1;min-width:110px}.selection-mark{position:absolute;top:14px;right:13px}.program-copy>span{padding-right:5px}}
+@media(max-width:480px){.header-logo{width:104px}.program-logo{width:76px;margin-right:6px}}
