@@ -51,22 +51,22 @@ export const PROGRAMS = freezeDeep([
     ],
   },
   {
-    id: 'eternal-private', name: 'Eternal Private', label: 'Private program',
+    id: 'eternal-private', name: 'Nugget', label: 'SDK & dashboard',
     source: 'https://hackerone.com/eternal-private',
-    description: 'A private program for a new Nugget initiative, evolving with researcher feedback and findings.',
+    description: 'A new Nugget initiative, evolving with researcher feedback and findings.',
     groupLabel: 'Nugget asset',
     groups: [
       {
         id: 'sdk', name: 'Nugget Web SDK', note: 'Support-ticket integration',
         ranges: { low: [100, 200], medium: [200, 300], high: [300, 500], critical: [500, 1000] },
         scope: ['Nugget_Web_SDK'],
-        scopeDescription: 'The web integration used to create support tickets. Use the testing instructions provided in the private program.',
+        scopeDescription: 'The web integration used to create support tickets. Use the testing instructions provided in the Nugget program.',
       },
       {
         id: 'dashboard', name: 'Nugget Dashboard', note: 'Eternal Tier 2 rates',
         ranges: { low: [100, 200], medium: [200, 500], high: [500, 1000], critical: [1000, 2000] },
         scope: ['Nugget Dashboard'],
-        scopeDescription: 'The dashboard where tickets created through the Nugget SDK appear. Refer to the private program for the authorized testing target.',
+        scopeDescription: 'The dashboard where tickets created through the Nugget SDK appear. Refer to the Nugget program for the authorized testing target.',
       },
     ],
   },

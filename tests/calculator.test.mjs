@@ -106,5 +106,5 @@ test('money and copied calculations retain currency, program, asset, score and m
   for (const value of [-1, NaN, Infinity, 0.5]) assert.throws(() => formatMoney(value));
   const q = calculateQuote({programId:'eternal-private', groupId:'dashboard', score:'9.5', multiplier:'2'});
   const text = quoteText(q);
-  for (const part of ['Eternal Private · Nugget Dashboard', '9.5 (Critical)', '$1,500.00 USD', '$3,000.00 USD', 'Manual multiplier: 2×', 'https://hackerone.com/eternal-private']) assert.ok(text.includes(part), part);
+  for (const part of ['Nugget · Nugget Dashboard', '9.5 (Critical)', '$1,500.00 USD', '$3,000.00 USD', 'Manual multiplier: 2×', 'https://hackerone.com/eternal-private']) assert.ok(text.includes(part), part);
 });
