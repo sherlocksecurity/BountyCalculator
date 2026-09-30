@@ -2,7 +2,7 @@
 
 [Open the calculator](https://sherlocksecurity.github.io/BountyCalculator/)
 
-Choose **Eternal** or **Eternal Private**, select an asset tier or Nugget asset,
+Choose **Eternal** or **Nugget**, select an asset tier or Nugget asset,
 and enter a finalized **CVSS v3.1 score**. The result shows the base bounty,
 applicable range, and calculation. This converts a finalized score to an
 estimated reward; it does not calculate a CVSS score from vulnerability metrics
@@ -11,15 +11,15 @@ or approve an award.
 ## Base rates (USD)
 
 Rates verified on **30 September 2026** against the Eternal program and the
-program owner's approved Eternal Private ranges.
+program owner's approved Nugget ranges.
 
 | Program / asset | Low: 0.1–3.9 | Medium: 4.0–6.9 | High: 7.0–8.9 | Critical: 9.0–10.0 |
 | --- | --- | --- | --- | --- |
 | Eternal · Tier 1 | $100–$300 | $300–$1,000 | $1,000–$2,000 | $2,000–$4,000 |
 | Eternal · Tier 2 | $100–$200 | $200–$500 | $500–$1,000 | $1,000–$2,000 |
 | Eternal · Tier 3 | $50–$100 | $100–$250 | $250–$500 | $500–$1,000 |
-| Eternal Private · Nugget Web SDK | $100–$200 | $200–$300 | $300–$500 | $500–$1,000 |
-| Eternal Private · Nugget Dashboard | $100–$200 | $200–$500 | $500–$1,000 | $1,000–$2,000 |
+| Nugget · Nugget Web SDK | $100–$200 | $200–$300 | $300–$500 | $500–$1,000 |
+| Nugget · Nugget Dashboard | $100–$200 | $200–$500 | $500–$1,000 | $1,000–$2,000 |
 
 CVSS **0.0 (None)** returns **$0.00**. Every other score is interpolated within
 its severity band:
@@ -47,10 +47,10 @@ editable in the browser, and campaign bonuses are never applied automatically.
 
 Final severity, eligibility and awards remain with the security team. Scope
 references are informational; consult the current policy and exclusions.
-Private testing targets and integration credentials are not included here.
+Restricted testing targets and integration credentials are not included here.
 
 Sources: [Eternal policy](https://hackerone.com/eternal),
-[Eternal Private policy (invited access)](https://hackerone.com/eternal-private),
+[Nugget policy (invited access)](https://hackerone.com/eternal-private),
 [FIRST CVSS v3.1 specification](https://www.first.org/cvss/v3.1/specification-document).
 
 ## Development and verification

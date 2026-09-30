@@ -59,7 +59,7 @@ test('program and group changes update every result and reset manual bonuses', (
   ui.select('rate-group', 'sdk');
   assert.equal(ui.id('base-amount').textContent, '$750.00');
   assert.equal(ui.id('quote-group').textContent, 'Nugget Web SDK');
-  assert.equal(ui.id('quote-program').textContent, 'Eternal Private');
+  assert.equal(ui.id('quote-program').textContent, 'Nugget');
   assert.equal(ui.id('policy-link').href, 'https://hackerone.com/eternal-private');
   assert.match(ui.id('rate-rows').textContent, /\$500–\$1,000/);
   ui.select('rate-group', 'dashboard');
@@ -91,14 +91,14 @@ test('copy uses current program/asset; async clipboard status cannot leak into a
   ui.select('rate-group','sdk');
   ui.score('9.5');
   ui.id('copy-result').click();
-  assert.match(copied, /Eternal Private · Nugget Web SDK/);
+  assert.match(copied, /Nugget · Nugget Web SDK/);
   assert.match(copied, /\$750.00 USD/);
   ui.select('rate-group','dashboard');
   complete();
   await Promise.resolve();
   assert.equal(ui.id('copy-status').textContent, '');
   ui.id('copy-result').click();
-  assert.match(copied, /Eternal Private · Nugget Dashboard/);
+  assert.match(copied, /Nugget · Nugget Dashboard/);
   assert.match(copied, /\$1,500.00 USD/);
   complete();
   await Promise.resolve();
