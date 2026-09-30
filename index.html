@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#171b2b">
   <meta name="description" content="Calculate Eternal and Nugget base bounties from a finalized CVSS score, with visible policy ranges and a calculation breakdown.">
   <title>Eternal · Bounty Calculator</title>
-  <link rel="stylesheet" href="styles.css?v=20260930-select-assets">
-  <script type="module" src="src/app.mjs?v=20260930-select-assets"></script>
+  <link rel="stylesheet" href="styles.css?v=20260930-public-notice">
+  <script type="module" src="src/app.mjs?v=20260930-public-notice"></script>
 </head>
 <body data-program="eternal">
   <a class="skip-link" href="#calculator">Skip to calculator</a>
@@ -84,7 +84,7 @@
       <p id="rates-caption" class="rates-caption">Choose an asset tier to see its rates.</p>
       <div class="table-scroll"><table class="rates-table"><caption class="visually-hidden">Reward ranges in USD by CVSS v3.1 severity</caption><thead><tr><th scope="col">Severity</th><th scope="col">CVSS v3.1</th><th scope="col">Base reward (USD)</th></tr></thead><tbody id="rate-rows"></tbody></table></div>
     </section>
-    <footer class="footer"><p>Base rewards use linear interpolation within each severity band. Final severity and awards are determined by the Eternal Security Team.</p><a href="https://www.first.org/cvss/v3.1/specification-document" target="_blank" rel="noopener noreferrer">CVSS v3.1 specification ↗</a></footer>
+    <footer class="footer"><p>Base rewards use linear interpolation within each severity band. Final severity and awards are determined by the Eternal Security Team.</p><a href="https://www.first.org/cvss/v3.1/specification-document" target="_blank" rel="noopener noreferrer">CVSS v3.1 specification ↗</a><p class="public-notice"><strong>This calculator and its GitHub source are intentionally public;</strong> reports based solely on their public availability as an information leak are out of scope and will be closed as spam.</p></footer>
     <noscript><p class="noscript-message">Enable JavaScript to calculate a bounty. Current policy rates are available on HackerOne.</p></noscript>
   </main>
   <dialog id="asset-dialog" class="asset-dialog" aria-labelledby="asset-dialog-title">
