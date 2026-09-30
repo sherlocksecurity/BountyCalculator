@@ -1,4 +1,4 @@
-import { getPolicy, SEVERITIES } from './policy.mjs?v=20260930-select-assets';
+import { getPolicy, SEVERITIES } from './policy.mjs?v=20260930-public-notice';
 
 export const MULTIPLIERS = Object.freeze(['1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5']);
 
