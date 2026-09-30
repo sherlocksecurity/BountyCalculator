@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-color-values';
-import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-color-values';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-compact-colors';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-compact-colors';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);
@@ -7,6 +7,8 @@ export function initCalculator(doc, options = {}) {
   let currentQuote = null;
   const scoreInput = byId('cvss-score');
   const slider = byId('cvss-slider');
+  const assetDialog = byId('asset-dialog');
+  let dialogGroupId = '';
 
   function textElement(tag, text, className) {
     const element = doc.createElement(tag);
@@ -62,38 +64,64 @@ export function initCalculator(doc, options = {}) {
   function renderGroups() {
     const selected = program();
     doc.body.dataset.program = selected.id;
-    byId('group-label').textContent = selected.id === 'eternal' ? 'Find your asset, choose its tier' : 'Choose your Nugget asset';
+    byId('group-label').textContent = selected.id === 'eternal' ? 'Select asset tier' : 'Select Nugget asset';
     byId('program-description').textContent = selected.description;
     byId('policy-link').href = selected.source;
     const labels = selected.groups.map(group => {
-      const label = doc.createElement('label');
-      label.className = 'group-option';
+      const wrapper = textElement('div', '', 'group-option');
       const input = doc.createElement('input');
       input.type = 'radio';
       input.name = 'rate-group';
       input.value = group.id;
+      input.id = `group-${group.id}`;
       input.checked = group.id === state.groupId;
       input.setAttribute('aria-label', group.name);
-      const card = textElement('span', '', 'group-card');
-      card.append(textElement('strong', group.name), textElement('span', group.note, 'group-note'));
-      if (selected.id === 'eternal') {
-        const assets = textElement('span', '', 'group-asset-list');
-        assets.setAttribute('role', 'list');
-        assets.setAttribute('aria-label', `${group.name} assets`);
-        for (const asset of group.scope) {
-          assets.append(assetRow(asset));
-        }
-        card.append(assets);
-      } else {
-        card.append(textElement('span', group.scopeDescription, 'group-asset-description'));
-      }
-      card.append(textElement('span', `Select ${group.name}`, 'group-select-label'));
-      label.append(input, card);
-      return label;
+      const card = textElement('label', '', 'group-card');
+      card.htmlFor = input.id;
+      const summaries = { 'tier-1': 'Zomato · Blinkit · Bistro', 'tier-2': 'Blinkit · Hyperpure · District', 'tier-3': 'District · Insider · more' };
+      card.append(textElement('strong', group.name), textElement('span', summaries[group.id] || group.note, 'group-note'));
+      const browse = textElement('button', selected.id === 'eternal' ? `View ${group.scope.length} assets ↗` : 'View details ↗', 'view-assets');
+      browse.type = 'button';
+      browse.dataset.viewGroup = group.id;
+      browse.setAttribute('aria-label', `View assets for ${group.name}`);
+      wrapper.append(input, card, browse);
+      return wrapper;
     });
     byId('group-options').replaceChildren(...labels);
     byId('group-options').style.setProperty('--group-count', String(selected.groups.length));
   }
+
+  function filterAssets() {
+    const group = program().groups.find(item => item.id === dialogGroupId);
+    if (!group) return;
+    const query = byId('asset-search').value.trim().toLowerCase();
+    const rows = group.scope.map(assetRow).filter(row => row.textContent.toLowerCase().includes(query));
+    byId('asset-dialog-list').replaceChildren(...rows);
+    byId('asset-search-empty').hidden = rows.length > 0;
+  }
+
+  byId('group-options').addEventListener('click', event => {
+    const button = event.target.closest('button[data-view-group]');
+    if (!button) return;
+    const group = program().groups.find(item => item.id === button.dataset.viewGroup);
+    if (!group) return;
+    dialogGroupId = group.id;
+    byId('asset-dialog-title').textContent = `${program().name} · ${group.name}`;
+    byId('asset-dialog-description').textContent = group.scopeDescription || 'Find your exact domain or app ID, then choose this tier.';
+    byId('asset-dialog-policy').href = program().source;
+    byId('asset-dialog-select').textContent = `Use ${group.name}`;
+    byId('asset-search').value = '';
+    filterAssets();
+    assetDialog.showModal();
+    byId('asset-search').focus();
+  });
+  byId('asset-search').addEventListener('input', filterAssets);
+  byId('asset-dialog-select').addEventListener('click', () => {
+    const input = byId(`group-${dialogGroupId}`);
+    if (!input) return;
+    input.click();
+    assetDialog.close();
+  });
 
   function renderReference(group, severity) {
     byId('rates-caption').textContent = group ? `${program().name} / ${group.name}` : `Choose ${program().id === 'eternal' ? 'an asset tier' : 'a Nugget asset'} to see its rates.`;
