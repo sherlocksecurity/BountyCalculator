@@ -8,6 +8,11 @@ applicable range, and calculation. This converts a finalized score to an
 estimated reward; it does not calculate a CVSS score from vulnerability metrics
 or approve an award.
 
+Each Eternal tier card shows its complete asset list before selection. Select
+the card containing the relevant domain or app ID, then enter the score. The
+bonus controls show each multiplier and its percentage uplift; adjusted rewards
+are displayed separately from the base bounty.
+
 ## Base rates (USD)
 
 Rates verified on **30 September 2026** against the Eternal program and the
