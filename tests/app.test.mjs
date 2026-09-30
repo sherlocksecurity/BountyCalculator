@@ -99,6 +99,34 @@ test('every multiplier card applies its labeled bonus without replacing the base
   assert.equal(ui.doc.querySelector('input[name="multiplier"]:checked').value, '1');
 });
 
+test('asset search preserves exact identifiers and only changes tier on explicit selection', () => {
+  const ui = setup();
+  const dialog = ui.id('asset-dialog');
+  dialog.showModal = () => dialog.setAttribute('open', '');
+  dialog.close = () => dialog.removeAttribute('open');
+  ui.select('rate-group', 'tier-1');
+  ui.score('9.5');
+  ui.select('multiplier', '2');
+  ui.doc.querySelector('button[data-view-group="tier-2"]').click();
+  assert.equal(dialog.open, true);
+  assert.equal(ui.id('asset-dialog-list').children.length, 9);
+  assert.equal(ui.id('quote-group').textContent, 'Tier 1');
+  ui.change(ui.id('asset-search'), '6670536058', 'input');
+  assert.equal(ui.id('asset-dialog-list').children.length, 1);
+  assert.match(ui.id('asset-dialog-list').textContent, /District · iOS/);
+  assert.match(ui.id('asset-dialog-list').textContent, /6670536058/);
+  ui.change(ui.id('asset-search'), 'no-such-asset', 'input');
+  assert.equal(ui.id('asset-search-empty').hidden, false);
+  ui.change(ui.id('asset-search'), '', 'input');
+  assert.equal(ui.id('asset-dialog-list').children.length, 9);
+  ui.id('asset-dialog-select').click();
+  assert.equal(dialog.open, false);
+  assert.equal(ui.id('quote-group').textContent, 'Tier 2');
+  assert.equal(ui.id('base-amount').textContent, '$1,500.00');
+  assert.equal(ui.id('bonus-status').textContent, 'No bonus applied');
+  assert.equal(ui.id('manual-result').hidden, true);
+});
+
 test('copy uses current program/asset; async clipboard status cannot leak into another quote', async () => {
   let copied;
   let complete;
