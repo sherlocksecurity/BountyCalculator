@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-readable-assets';
-import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-readable-assets';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-color-values';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-color-values';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);
@@ -134,6 +134,7 @@ export function initCalculator(doc, options = {}) {
       try { ticks = parseScore(scoreInput.value); } catch (error) { scoreError = error.message; }
     }
     const severity = ticks === undefined ? null : severityForTicks(ticks);
+    byId('score-section').dataset.severity = severity?.id || 'unset';
     scoreInput.setAttribute('aria-invalid', String(Boolean(scoreError)));
     byId('score-error').hidden = !scoreError;
     byId('score-error').textContent = scoreError;

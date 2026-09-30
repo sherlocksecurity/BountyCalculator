@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#171b2b">
   <meta name="description" content="Calculate Eternal and Nugget base bounties from a finalized CVSS score, with visible policy ranges and a calculation breakdown.">
   <title>Eternal · Bounty Calculator</title>
-  <link rel="stylesheet" href="styles.css?v=20260930-readable-assets">
-  <script type="module" src="src/app.mjs?v=20260930-readable-assets"></script>
+  <link rel="stylesheet" href="styles.css?v=20260930-color-values">
+  <script type="module" src="src/app.mjs?v=20260930-color-values"></script>
 </head>
 <body data-program="eternal">
   <a class="skip-link" href="#calculator">Skip to calculator</a>
@@ -47,7 +47,7 @@
     <div class="workspace">
       <section class="panel input-panel" aria-labelledby="configuration-title">
         <div class="section-heading"><div><p class="eyebrow">CALCULATION INPUTS</p><h2 id="configuration-title">Set up your estimate</h2></div><span class="step-number" aria-hidden="true">01</span></div>
-        <div class="score-section">
+        <div id="score-section" class="score-section">
           <div class="score-heading"><label for="cvss-score">CVSS score</label><span>0.0–10.0 · one decimal</span></div>
           <div class="score-input-wrap"><input id="cvss-score" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="e.g. 9.5" aria-describedby="score-hint score-error"><span id="severity-pill" class="severity-pill" hidden></span></div>
           <div class="slider-wrap"><input id="cvss-slider" type="range" min="0" max="100" step="1" value="0" aria-label="Adjust CVSS score" aria-valuetext="No score entered"><div class="slider-labels" aria-hidden="true"><span>0.0</span><span>4.0</span><span>7.0</span><span>9.0</span><span>10.0</span></div></div>
