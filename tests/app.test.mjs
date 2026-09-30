@@ -70,6 +70,29 @@ test('program and group changes update every result and reset manual bonuses', (
   assert.equal(ui.id('quote-result').hidden, true);
 });
 
+test('published USD ranges stay expanded and match all five selected policies', () => {
+  const ui = setup();
+  const table = ui.doc.querySelector('.rates-table');
+  assert.equal(table.closest('details'), null);
+  assert.equal(table.querySelector('thead th:last-child').textContent, 'Base reward (USD)');
+  const expected = [
+    ['eternal','tier-1',['$100–$300','$300–$1,000','$1,000–$2,000','$2,000–$4,000']],
+    ['eternal','tier-2',['$100–$200','$200–$500','$500–$1,000','$1,000–$2,000']],
+    ['eternal','tier-3',['$50–$100','$100–$250','$250–$500','$500–$1,000']],
+    ['eternal-private','sdk',['$100–$200','$200–$300','$300–$500','$500–$1,000']],
+    ['eternal-private','dashboard',['$100–$200','$200–$500','$500–$1,000','$1,000–$2,000']],
+  ];
+  for (const [program, group, ranges] of expected) {
+    ui.select('program', program);
+    ui.select('rate-group', group);
+    assert.deepEqual([...table.querySelectorAll('.rate-value')].map(cell => cell.textContent), ranges);
+    assert.deepEqual([...table.querySelectorAll('tbody td:first-of-type')].map(cell => cell.textContent), ['0.1–3.9','4.0–6.9','7.0–8.9','9.0–10.0']);
+    ui.score('9.5');
+    ui.select('multiplier', '5');
+    assert.deepEqual([...table.querySelectorAll('.rate-value')].map(cell => cell.textContent), ranges);
+  }
+});
+
 test('slider updates score, severity, rate highlight and calculation together', () => {
   const ui = setup();
   ui.select('rate-group', 'tier-1');

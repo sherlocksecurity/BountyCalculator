@@ -207,10 +207,11 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
 
 /* Use the available window width; keep the working controls together. */
 .page,.topbar-inner{max-width:none;width:100%}
-.reference-disclosure{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:white}
-.reference-disclosure>summary{padding:14px 18px;font-size:13px;font-weight:650;color:var(--ink)}
-.reference-disclosure>summary>span{float:right;font-size:11px;color:var(--muted);font-weight:400}
-.reference-disclosure .rates-panel{margin-top:0;border:0;border-radius:0 0 12px 12px;box-shadow:none;padding-top:12px}
+.reward-reference{margin-top:18px;padding:18px 22px}
+.reward-reference .rates-caption{font-size:12px;margin-bottom:12px}
+.reward-reference .rates-table{font-size:13px}
+.reward-reference .rates-table thead th{font-size:11px;letter-spacing:.3px;color:#334155}
+.reward-reference .rate-value{white-space:nowrap}
 @media(min-width:1180px){
   .page{display:grid;grid-template-columns:minmax(250px,.72fr) minmax(350px,1fr) minmax(350px,1.1fr);column-gap:20px;row-gap:16px;padding:22px 24px 18px;align-items:start}
   .topbar-inner{padding-left:24px;padding-right:24px}
@@ -224,7 +225,7 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
   .asset-picker .group-card{min-height:115px;padding:16px 15px 45px}
   .asset-picker .group-card>strong{font-size:18px}
   .asset-picker .group-card>.group-note{font-size:12px}
-  .reference-disclosure{grid-column:1/-1;grid-row:4;margin:0}
+  .reward-reference{grid-column:1/-1;grid-row:4;margin:0}
   .footer{grid-column:1/-1;grid-row:5;margin:0}
   .page-heading h1{font-size:32px}
   .page-heading .subtitle{margin-top:8px;font-size:13px}
@@ -238,7 +239,7 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
   .bonus-intro{flex-wrap:wrap;gap:4px}
 }
 @media(min-width:1600px){.page{padding-left:32px;padding-right:32px;column-gap:24px}.topbar-inner{padding-left:32px;padding-right:32px}}
-@media(max-width:480px){.reference-disclosure>summary{font-size:12px;padding:13px}.reference-disclosure>summary>span{display:none}}
+@media(max-width:480px){.reward-reference{padding:18px 12px}.reward-reference .section-heading{flex-wrap:wrap}.reward-reference .text-link{font-size:11px}.reward-reference .rates-table{font-size:12px}.reward-reference .rates-table thead th{font-size:10px;letter-spacing:0}.reward-reference .rates-table th,.reward-reference .rates-table td{padding:11px 6px}}
 
 @media(min-width:1180px){
   .page-heading{grid-column:1;grid-row:1}
@@ -248,6 +249,6 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
   .program-picker{grid-column:2/4;grid-row:1;align-self:stretch;align-items:stretch}
   .program-option{display:flex}.program-card{width:100%;height:100%}
   .asset-picker,.input-panel,.result-panel{grid-row:2}
-  .reference-disclosure{grid-row:3}
+  .reward-reference{grid-row:3}
   .footer{grid-row:4}
 }

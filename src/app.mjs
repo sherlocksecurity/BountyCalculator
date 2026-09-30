@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-fullwidth-colors';
-import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-fullwidth-colors';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-visible-ranges';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-visible-ranges';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);

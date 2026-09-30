@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#171b2b">
   <meta name="description" content="Calculate Eternal and Nugget base bounties from a finalized CVSS score, with visible policy ranges and a calculation breakdown.">
   <title>Eternal · Bounty Calculator</title>
-  <link rel="stylesheet" href="styles.css?v=20260930-fullwidth-colors">
-  <script type="module" src="src/app.mjs?v=20260930-fullwidth-colors"></script>
+  <link rel="stylesheet" href="styles.css?v=20260930-visible-ranges">
+  <script type="module" src="src/app.mjs?v=20260930-visible-ranges"></script>
 </head>
 <body data-program="eternal">
   <a class="skip-link" href="#calculator">Skip to calculator</a>
@@ -77,14 +77,11 @@
       </section>
     </div>
 
-    <details class="reference-disclosure">
-      <summary>Reward ranges &amp; policy <span>View all CVSS bands</span></summary>
-    <section class="panel rates-panel" aria-labelledby="rates-title">
-      <div class="section-heading"><div><p class="eyebrow">POLICY REFERENCE</p><h2 id="rates-title">Published reward ranges</h2></div><a id="policy-link" class="text-link" href="https://hackerone.com/eternal" target="_blank" rel="noopener noreferrer">View program policy <span aria-hidden="true">↗</span></a></div>
+    <section class="panel rates-panel reward-reference" aria-labelledby="rates-title">
+      <div class="section-heading"><div><p class="eyebrow">POLICY REFERENCE</p><h2 id="rates-title">Reward ranges &amp; policy</h2></div><a id="policy-link" class="text-link" href="https://hackerone.com/eternal" target="_blank" rel="noopener noreferrer">View program policy <span aria-hidden="true">↗</span></a></div>
       <p id="rates-caption" class="rates-caption">Choose an asset tier to see its rates.</p>
-      <div class="table-scroll"><table class="rates-table"><caption class="visually-hidden">Reward ranges in USD by CVSS v3.1 severity</caption><thead><tr><th scope="col">Severity</th><th scope="col">CVSS v3.1</th><th scope="col">Base reward · USD</th></tr></thead><tbody id="rate-rows"></tbody></table></div>
+      <div class="table-scroll"><table class="rates-table"><caption class="visually-hidden">Reward ranges in USD by CVSS v3.1 severity</caption><thead><tr><th scope="col">Severity</th><th scope="col">CVSS v3.1</th><th scope="col">Base reward (USD)</th></tr></thead><tbody id="rate-rows"></tbody></table></div>
     </section>
-    </details>
     <footer class="footer"><p>Base rewards use linear interpolation within each severity band. Final severity and awards are determined by the Eternal Security Team.</p><a href="https://www.first.org/cvss/v3.1/specification-document" target="_blank" rel="noopener noreferrer">CVSS v3.1 specification ↗</a></footer>
     <noscript><p class="noscript-message">Enable JavaScript to calculate a bounty. Current policy rates are available on HackerOne.</p></noscript>
   </main>
