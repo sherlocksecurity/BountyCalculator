@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs';
-import { calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-nugget';
+import { calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-nugget';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);

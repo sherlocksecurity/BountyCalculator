@@ -80,7 +80,10 @@ The regression suite includes:
 Policy data lives in `src/policy.mjs`, calculation logic in `src/calculator.mjs`,
 and UI behavior in `src/app.mjs`. When changing rates, verify the source policy,
 update the verification date in the data and page, update the independent
-fixtures, and run the checks. Never change the test fixtures solely to make a
+fixtures, and run the checks. For each release, change the shared `?v=` release
+tag on the stylesheet, entry script and all module imports in `index.html`,
+`src/app.mjs` and `src/calculator.mjs` so cached policy data cannot be mixed with
+a newer interface. Never change the test fixtures solely to make a
 failure pass.
 
 GitHub Pages publishes the repository root from `main`. CI runs on pushes and
