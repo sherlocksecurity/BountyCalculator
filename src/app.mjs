@@ -1,9 +1,9 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-visible-ranges';
-import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-visible-ranges';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-select-assets';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-select-assets';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);
-  const state = { programId: 'eternal', groupId: '', multiplier: '1' };
+  const state = { programId: 'eternal', groupId: '', asset: '', multiplier: '1' };
   let currentQuote = null;
   const scoreInput = byId('cvss-score');
   const slider = byId('cvss-slider');
@@ -21,7 +21,7 @@ export function initCalculator(doc, options = {}) {
     return PROGRAMS.find(item => item.id === state.programId);
   }
 
-  function assetRow(asset) {
+  function assetLabel(asset) {
     const androidNames = {
       'com.application.zomato': 'Zomato · Android',
       'com.grofers.customerapp': 'Blinkit · Android',
@@ -34,11 +34,34 @@ export function initCalculator(doc, options = {}) {
       (asset.startsWith('https://') ? 'Zomato MCP endpoint' : asset);
     const identifier = ios ? `App Store ID: ${ios[1]}` :
       (androidNames[asset] || asset.startsWith('https://') ? asset : '');
-    const row = textElement('span', '', 'asset-row');
+    return { name, identifier };
+  }
+
+  function assetRow(asset, group) {
+    const { name, identifier } = assetLabel(asset);
+    const row = textElement('div', '', 'asset-row');
     row.setAttribute('role', 'listitem');
-    row.append(textElement('span', name, 'asset-name'));
-    if (identifier) row.append(textElement('span', identifier, 'asset-identifier'));
+    const button = textElement('button', '', 'asset-choice');
+    button.type = 'button';
+    button.dataset.asset = asset;
+    button.dataset.group = group.id;
+    button.setAttribute('aria-label', `Select ${name}${identifier ? ` (${identifier})` : ''} · ${group.name}`);
+    if (state.groupId === group.id && state.asset === asset) button.setAttribute('aria-current', 'true');
+    const label = textElement('span', '', 'asset-choice-label');
+    label.append(textElement('span', name, 'asset-name'));
+    if (identifier) label.append(textElement('span', identifier, 'asset-identifier'));
+    button.append(label, textElement('span', group.name, 'asset-tier-badge'));
+    row.append(button);
     return row;
+  }
+
+  function selectGroup(group, asset = '') {
+    if (!program().groups.includes(group) || (asset && !group.scope.includes(asset))) return;
+    state.groupId = group.id;
+    state.asset = asset;
+    resetMultiplier();
+    for (const input of byId('group-options').querySelectorAll('input')) input.checked = input.value === group.id;
+    render();
   }
 
   function resetMultiplier() {
@@ -92,34 +115,46 @@ export function initCalculator(doc, options = {}) {
   }
 
   function filterAssets() {
-    const group = program().groups.find(item => item.id === dialogGroupId);
-    if (!group) return;
+    const groups = program().groups.filter(item => !dialogGroupId || item.id === dialogGroupId);
     const query = byId('asset-search').value.trim().toLowerCase();
-    const rows = group.scope.map(assetRow).filter(row => row.textContent.toLowerCase().includes(query));
+    const rows = groups.flatMap(group => group.scope.map(asset => assetRow(asset, group))).filter(row => row.textContent.toLowerCase().includes(query));
     byId('asset-dialog-list').replaceChildren(...rows);
     byId('asset-search-empty').hidden = rows.length > 0;
   }
 
-  byId('group-options').addEventListener('click', event => {
-    const button = event.target.closest('button[data-view-group]');
-    if (!button) return;
-    const group = program().groups.find(item => item.id === button.dataset.viewGroup);
-    if (!group) return;
-    dialogGroupId = group.id;
-    byId('asset-dialog-title').textContent = `${program().name} · ${group.name}`;
-    byId('asset-dialog-description').textContent = group.scopeDescription || 'Find your exact domain or app ID, then choose this tier.';
+  function openAssets(group) {
+    dialogGroupId = group?.id || '';
+    byId('asset-dialog-title').textContent = `${program().name} · ${group?.name || 'Choose an asset'}`;
+    byId('asset-dialog-description').textContent = group?.scopeDescription || 'Select a domain or app below. Its reward tier is applied automatically.';
     byId('asset-dialog-policy').href = program().source;
-    byId('asset-dialog-select').textContent = `Use ${group.name}`;
+    byId('asset-dialog-select').hidden = !group;
+    byId('asset-dialog-select').textContent = group ? `Use ${group.name} only` : '';
     byId('asset-search').value = '';
     filterAssets();
     assetDialog.showModal();
     byId('asset-search').focus();
+  }
+  byId('choose-asset').addEventListener('click', () => openAssets());
+  byId('group-options').addEventListener('click', event => {
+    const button = event.target.closest('button[data-view-group]');
+    if (!button) return;
+    const group = program().groups.find(item => item.id === button.dataset.viewGroup);
+    if (group) openAssets(group);
+  });
+  byId('asset-dialog-list').addEventListener('click', event => {
+    const button = event.target.closest('button[data-asset]');
+    if (!button) return;
+    const group = program().groups.find(item => item.id === button.dataset.group);
+    if (!group || !group.scope.includes(button.dataset.asset)) return;
+    selectGroup(group, button.dataset.asset);
+    assetDialog.close();
+    byId('choose-asset').focus();
   });
   byId('asset-search').addEventListener('input', filterAssets);
   byId('asset-dialog-select').addEventListener('click', () => {
-    const input = byId(`group-${dialogGroupId}`);
-    if (!input) return;
-    input.click();
+    const group = program().groups.find(item => item.id === dialogGroupId);
+    if (!group) return;
+    selectGroup(group);
     assetDialog.close();
   });
 
@@ -156,6 +191,12 @@ export function initCalculator(doc, options = {}) {
   function render() {
     byId('bonus-status').textContent = state.multiplier === '1' ? 'No bonus applied' : `${state.multiplier}× selected`;
     const group = program().groups.find(item => item.id === state.groupId);
+    const selectedAsset = state.asset ? assetLabel(state.asset) : null;
+    byId('selected-asset-name').textContent = selectedAsset?.name || 'Choose an asset';
+    byId('selected-asset-note').textContent = selectedAsset ? `${group.name} · Change asset` : 'Search all assets · Tier selected automatically';
+    byId('choose-asset').setAttribute('aria-label', selectedAsset ? `Change asset: ${selectedAsset.name}` : 'Choose an asset');
+    byId('quote-asset').textContent = state.asset;
+    byId('quote-asset').hidden = !state.asset;
     let ticks;
     let scoreError = '';
     if (scoreInput.value.trim() !== '') {
@@ -181,7 +222,7 @@ export function initCalculator(doc, options = {}) {
     let quote;
     try { quote = calculateQuote({ ...state, score: scoreInput.value }); }
     catch (error) { return clearResult(error.message); }
-    currentQuote = quote;
+    currentQuote = { ...quote, asset: state.asset };
     byId('copy-status').textContent = '';
     byId('empty-result').hidden = true;
     byId('quote-result').hidden = false;
@@ -208,15 +249,15 @@ export function initCalculator(doc, options = {}) {
     if (!PROGRAMS.some(item => item.id === event.target.value)) return;
     state.programId = event.target.value;
     state.groupId = '';
+    state.asset = '';
     resetMultiplier();
     renderGroups();
     render();
   });
   byId('group-options').addEventListener('change', event => {
     if (!event.target.matches('input[name="rate-group"]')) return;
-    state.groupId = event.target.value;
-    resetMultiplier();
-    render();
+    const group = program().groups.find(item => item.id === event.target.value);
+    if (group) selectGroup(group);
   });
   scoreInput.addEventListener('input', render);
   slider.addEventListener('input', () => {
@@ -237,7 +278,7 @@ export function initCalculator(doc, options = {}) {
       return clipboard.writeText(text);
     });
     try {
-      await copy(`${quoteText(copiedQuote)}\nRates verified: ${VERIFIED_ON}`);
+      await copy(`${quoteText(copiedQuote)}${copiedQuote.asset ? `\nSelected asset: ${copiedQuote.asset}` : ''}\nRates verified: ${VERIFIED_ON}`);
       if (currentQuote === copiedQuote) byId('copy-status').textContent = 'Calculation copied';
     } catch {
       if (currentQuote === copiedQuote) byId('copy-status').textContent = 'Copy unavailable. Select the calculation text instead.';

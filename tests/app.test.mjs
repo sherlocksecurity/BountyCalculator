@@ -180,3 +180,87 @@ test('clipboard failure is visible and never reports success', async () => {
   await Promise.resolve();
   assert.match(ui.id('copy-status').textContent, /Copy unavailable/);
 });
+
+test('every selectable asset applies its exact published tier and resets the bonus', () => {
+  const ui = setup();
+  const dialog = ui.id('asset-dialog');
+  dialog.showModal = () => dialog.setAttribute('open', '');
+  dialog.close = () => dialog.removeAttribute('open');
+  const fixtures = [
+    ['eternal','tier-1','$3,000.00',['*.zomato.com','*.zomans.com','*.runnr.in','blinkit.com','434613896 · Zomato iOS','960335206 · Blinkit Customer iOS','6670203019 · Blinkit Bistro iOS','com.application.zomato','com.grofers.customerapp','com.blinkit.bistro','com.zomato.delivery','https://mcp-server.zomato.com/mcp']],
+    ['eternal','tier-2','$1,500.00',['*.blinkit.com','*.hyperpure.com','*.grofer.io','*.grofers.com','www.district.in','api2.grofers.com','api.grofers.com','com.application.zomato.district','6670536058 · District iOS']],
+    ['eternal','tier-3','$750.00',['*.district.in','*.insider.in','*.edition.in','*.ticketnew.com','*.eternal.com']],
+    ['eternal-private','sdk','$750.00',['Nugget_Web_SDK']],
+    ['eternal-private','dashboard','$1,500.00',['Nugget Dashboard']],
+  ];
+  ui.score('9.5');
+  for (const [program, group, base, assets] of fixtures) {
+    ui.select('program', program);
+    for (const asset of assets) {
+      ui.select('multiplier', '5');
+      ui.id('choose-asset').click();
+      const button = [...ui.id('asset-dialog-list').querySelectorAll('button')].find(row => row.dataset.asset === asset);
+      assert.ok(button, `Asset missing: ${asset}`);
+      button.click();
+      assert.equal(dialog.open, false);
+      assert.equal(ui.doc.querySelector('input[name="rate-group"]:checked').value, group);
+      assert.equal(ui.id('quote-asset').textContent, asset);
+      assert.equal(ui.id('quote-asset').hidden, false);
+      assert.equal(ui.id('base-amount').textContent, base);
+      assert.equal(ui.doc.querySelector('input[name="multiplier"]:checked').value, '1');
+      assert.equal(ui.id('manual-result').hidden, true);
+    }
+  }
+});
+
+test('global asset search spans tiers and cancelling preserves the current selection', () => {
+  const ui = setup();
+  const dialog = ui.id('asset-dialog');
+  dialog.showModal = () => dialog.setAttribute('open', '');
+  dialog.close = () => dialog.removeAttribute('open');
+  ui.id('choose-asset').click();
+  assert.equal(ui.id('asset-dialog-list').children.length, 26);
+  assert.equal(ui.id('asset-dialog-select').hidden, true);
+  ui.change(ui.id('asset-search'), 'district', 'input');
+  assert.deepEqual([...ui.id('asset-dialog-list').querySelectorAll('button')].map(button => button.dataset.group), ['tier-2','tier-2','tier-2','tier-3']);
+  ui.change(ui.id('asset-search'), '6670536058', 'input');
+  ui.id('asset-dialog-list').querySelector('button').click();
+  assert.equal(ui.id('selected-asset-name').textContent, 'District · iOS');
+  ui.score('9.5');
+  ui.select('multiplier', '2');
+  ui.id('choose-asset').click();
+  ui.change(ui.id('asset-search'), 'blinkit', 'input');
+  dialog.close();
+  assert.equal(ui.id('selected-asset-name').textContent, 'District · iOS');
+  assert.equal(ui.id('adjusted-amount').textContent, '$3,000.00');
+});
+
+test('copied selection includes the exact asset and cannot persist across tier or program changes', async () => {
+  let copied = '';
+  const ui = setup({writeClipboard: async text => { copied = text; }});
+  const dialog = ui.id('asset-dialog');
+  dialog.showModal = () => dialog.setAttribute('open', '');
+  dialog.close = () => dialog.removeAttribute('open');
+  ui.id('choose-asset').click();
+  ui.change(ui.id('asset-search'), 'com.application.zomato.district', 'input');
+  ui.id('asset-dialog-list').querySelector('button').click();
+  ui.score('9.5');
+  ui.id('copy-result').click();
+  await Promise.resolve();
+  assert.match(copied, /Eternal · Tier 2/);
+  assert.match(copied, /Selected asset: com.application.zomato.district/);
+  assert.match(copied, /\$1,500.00 USD/);
+  ui.select('rate-group', 'tier-3');
+  assert.equal(ui.id('selected-asset-name').textContent, 'Choose an asset');
+  assert.equal(ui.id('quote-asset').hidden, true);
+  ui.id('copy-result').click();
+  await Promise.resolve();
+  assert.doesNotMatch(copied, /Selected asset:/);
+  ui.id('choose-asset').click();
+  ui.change(ui.id('asset-search'), 'blinkit.com', 'input');
+  ui.id('asset-dialog-list').querySelector('button').click();
+  ui.select('program', 'eternal-private');
+  assert.equal(ui.id('selected-asset-name').textContent, 'Choose an asset');
+  assert.equal(ui.id('quote-asset').textContent, '');
+  assert.equal(ui.id('quote-result').hidden, true);
+});
