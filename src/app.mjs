@@ -1,5 +1,5 @@
-import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-asset-bonus';
-import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-asset-bonus';
+import { PROGRAMS, SEVERITIES, VERIFIED_ON } from './policy.mjs?v=20260930-readable-assets';
+import { MULTIPLIERS, calculateQuote, parseScore, severityForTicks, scoreLabel, formatMoney, formatRange, quoteText } from './calculator.mjs?v=20260930-readable-assets';
 
 export function initCalculator(doc, options = {}) {
   const byId = id => doc.getElementById(id);
@@ -17,6 +17,26 @@ export function initCalculator(doc, options = {}) {
 
   function program() {
     return PROGRAMS.find(item => item.id === state.programId);
+  }
+
+  function assetRow(asset) {
+    const androidNames = {
+      'com.application.zomato': 'Zomato · Android',
+      'com.grofers.customerapp': 'Blinkit · Android',
+      'com.blinkit.bistro': 'Blinkit Bistro · Android',
+      'com.zomato.delivery': 'Zomato Delivery · Android',
+      'com.application.zomato.district': 'District · Android',
+    };
+    const ios = asset.match(/^(\d+) · (.+) iOS$/);
+    const name = ios ? `${ios[2]} · iOS` : androidNames[asset] ||
+      (asset.startsWith('https://') ? 'Zomato MCP endpoint' : asset);
+    const identifier = ios ? `App Store ID: ${ios[1]}` :
+      (androidNames[asset] || asset.startsWith('https://') ? asset : '');
+    const row = textElement('span', '', 'asset-row');
+    row.setAttribute('role', 'listitem');
+    row.append(textElement('span', name, 'asset-name'));
+    if (identifier) row.append(textElement('span', identifier, 'asset-identifier'));
+    return row;
   }
 
   function resetMultiplier() {
@@ -61,9 +81,7 @@ export function initCalculator(doc, options = {}) {
         assets.setAttribute('role', 'list');
         assets.setAttribute('aria-label', `${group.name} assets`);
         for (const asset of group.scope) {
-          const item = textElement('span', asset);
-          item.setAttribute('role', 'listitem');
-          assets.append(item);
+          assets.append(assetRow(asset));
         }
         card.append(assets);
       } else {
