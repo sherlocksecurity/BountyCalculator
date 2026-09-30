@@ -204,3 +204,50 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
 @media(min-width:741px){.topbar-inner{padding-top:15px;padding-bottom:15px}.page{padding-top:25px}.page-heading{margin-bottom:20px}h1{font-size:36px}.program-card{min-height:76px;padding-top:14px;padding-bottom:14px}.program-picker{margin-bottom:18px}.input-panel{padding:23px 26px}.multiplier-card{min-height:55px}.bonus-picker{margin-top:21px;padding-top:18px}.input-panel .section-heading{margin-bottom:18px}}
 @media(max-width:740px){.asset-picker{padding:17px}.asset-picker .group-options{gap:8px}.asset-picker .group-card{padding:13px 11px 45px;min-height:145px}.asset-picker .group-card>strong{font-size:16px}.asset-picker .group-card>.group-note{font-size:11px}.asset-picker .group-card::after{right:10px;top:16px;width:11px;height:11px}.view-assets{left:6px;font-size:11px;padding:7px 5px}.asset-dialog{padding:20px}.asset-dialog-header h2{font-size:20px}}
 @media(max-width:480px){.asset-picker{padding:15px 12px}.asset-picker .group-card>strong{font-size:15px}.asset-picker .group-card>.group-note{font-size:10px}.asset-picker .group-card::after{display:none}.asset-picker .group-card>strong{padding-right:0}.asset-picker .group-card{min-height:143px;padding:12px 9px 44px}.view-assets{font-size:10px;left:5px}.asset-dialog{max-height:90dvh;padding:18px}}
+
+/* Use the available window width; keep the working controls together. */
+.page,.topbar-inner{max-width:none;width:100%}
+.reference-disclosure{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:white}
+.reference-disclosure>summary{padding:14px 18px;font-size:13px;font-weight:650;color:var(--ink)}
+.reference-disclosure>summary>span{float:right;font-size:11px;color:var(--muted);font-weight:400}
+.reference-disclosure .rates-panel{margin-top:0;border:0;border-radius:0 0 12px 12px;box-shadow:none;padding-top:12px}
+@media(min-width:1180px){
+  .page{display:grid;grid-template-columns:minmax(250px,.72fr) minmax(350px,1fr) minmax(350px,1.1fr);column-gap:20px;row-gap:16px;padding:22px 24px 18px;align-items:start}
+  .topbar-inner{padding-left:24px;padding-right:24px}
+  .page-heading{grid-column:1/-1;grid-row:1;margin:0}
+  .program-picker{grid-column:1/-1;grid-row:2;margin:0}
+  .asset-picker{grid-column:1;grid-row:3;margin:0;padding:20px 18px}
+  .workspace{display:contents}
+  .input-panel{grid-column:2;grid-row:3;padding:22px}
+  .result-panel{grid-column:3;grid-row:3;position:static;min-height:0;align-self:stretch;padding:25px}
+  .asset-picker .group-options{grid-template-columns:1fr;gap:11px}
+  .asset-picker .group-card{min-height:115px;padding:16px 15px 45px}
+  .asset-picker .group-card>strong{font-size:18px}
+  .asset-picker .group-card>.group-note{font-size:12px}
+  .reference-disclosure{grid-column:1/-1;grid-row:4;margin:0}
+  .footer{grid-column:1/-1;grid-row:5;margin:0}
+  .page-heading h1{font-size:32px}
+  .page-heading .subtitle{margin-top:8px;font-size:13px}
+  .input-panel .eyebrow{font-size:9px;letter-spacing:1.3px}
+  .input-panel .step-number{display:none}
+  .input-panel h2{font-size:18px}
+  .input-panel .section-heading{margin-bottom:18px}
+  .score-input-wrap{min-height:67px}
+  .bonus-picker{margin-top:18px;padding-top:16px}
+  .multiplier-card{min-height:52px;padding:8px}
+  .bonus-intro{flex-wrap:wrap;gap:4px}
+}
+@media(min-width:1600px){.page{padding-left:32px;padding-right:32px;column-gap:24px}.topbar-inner{padding-left:32px;padding-right:32px}}
+@media(max-width:480px){.reference-disclosure>summary{font-size:12px;padding:13px}.reference-disclosure>summary>span{display:none}}
+
+@media(min-width:1180px){
+  .page-heading{grid-column:1;grid-row:1}
+  .page-heading .eyebrow{display:none}
+  .page-heading .subtitle{font-size:12px;line-height:1.5;max-width:310px}
+  .page-heading .verification{display:none}
+  .program-picker{grid-column:2/4;grid-row:1;align-self:stretch;align-items:stretch}
+  .program-option{display:flex}.program-card{width:100%;height:100%}
+  .asset-picker,.input-panel,.result-panel{grid-row:2}
+  .reference-disclosure{grid-row:3}
+  .footer{grid-row:4}
+}
